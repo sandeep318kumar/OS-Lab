@@ -1,0 +1,254 @@
+1. FIFO
+#include<bits/stdc++.h>
+using namespace std;
+int solve(int A[], int n, int k)
+{
+    int cc = 0;
+    vector<int>v1, v2;
+    int i = 0;
+    while(v1.size() < k)
+    {
+        cout<<"Current Element is "<<A[i]<<endl<<"The Frame Window is ";
+        for(int j=0;j<v1.size();j++){
+            cout<<v1[j]<<" ";
+        }
+        cout<<endl;
+        for(int j=0;j<v2.size();j++)
+            v2[j]++;
+        if(find(v1.begin(), v1.end(), A[i]) == v1.end()){
+            v1.push_back(A[i]);
+            v2.push_back(1);
+            cc++;
+        }
+        i++;
+    }
+    while(i<n)
+    {
+        cout<<"Current Element is "<<A[i]<<endl<<"The Frame Window is ";
+        for(int j=0;j<v1.size();j++){
+            cout<<v1[j]<<" ";
+        }
+        cout<<endl;
+        for(int j=0;j<v2.size();j++)
+            v2[j]++;
+
+        if(find(v1.begin(), v1.end(), A[i]) == v1.end()){
+            int m1 = -1, m2 = INT_MIN;
+            for(int j=0;j<v2.size();j++){
+                if(v2[j] > m2){
+                    m2 = v2[j];
+                    m1 = j;
+                }
+            }
+            v1[m1] = A[i];
+            v2[m1] = 1;
+            cc++;
+        }
+        i++;
+    }
+    return cc;
+}
+int main()
+{
+    int A[] = {7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2, 1, 2, 0, 1, 7, 0, 1};
+    // int A[] = {1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5};
+    int n = sizeof(A)/sizeof(A[0]);
+    int k = 3;
+     cout<<"\nTotal Page Faults Are "<<solve(A, n, k);
+    return 0;
+}
+
+2. optimal algo
+#include<bits/stdc++.h>
+using namespace std;
+int solve(int A[], int n, int k)
+{
+    int cc = 0;
+    map<int, vector<int>>mp;
+    map<int, vector<int>>::iterator it;
+    for(int i=0;i<n;i++)
+    {
+        mp[A[i]].push_back(i);
+    }
+    for(it = mp.begin();it != mp.end();it++)
+    {
+       it->second.push_back(100);
+    }
+    // for(auto i:mp)
+    // {
+    //     cout<<i.first<<"-> ";
+    //     for(auto j:i.second){
+    //         cout<<j<<" ";
+    //     }
+    //     cout<<endl;
+    // }
+    vector<int>v1;
+    int i = 0;
+    while(v1.size() < k)
+    {
+        if(find(v1.begin(), v1.end(), A[i]) == v1.end()){
+            cout<<"Current Element is "<<A[i]<<endl<<"The Frame Window is ";
+            for(int j=0;j<v1.size();j++){
+                cout<<v1[j]<<" ";
+            }
+            cout<<endl;
+            v1.push_back(A[i]);
+            cc++;
+        }
+        i++;
+    }
+
+    while(i<n){
+        cout<<"Current Element is "<<A[i]<<endl<<"The Frame Window is ";
+        for(int j=0;j<v1.size();j++){
+            cout<<v1[j]<<" ";
+        }
+        cout<<endl;
+
+        if(find(v1.begin(), v1.end(), A[i]) == v1.end()){
+            cc++;
+            int m1 = -1, m2 = INT_MIN;
+
+            
+            for(int j=0;j<v1.size();j++){
+                int m3 = 0;
+                for(int l=0;l<mp[v1[j]].size();l++){
+                    if(mp[v1[j]][l] > i){
+                        m3 = mp[v1[j]][l];
+                        break;
+                    }
+                }
+                // cout<<v1[j]<<"->"<<m3<<", "<<m2<<endl;
+                if(m3 > m2){
+                    m2 = m3;
+                    m1 = j;
+                }
+            }
+            // cout<<"Max is "<<m1<<endl;
+            v1[m1] = A[i];
+        }
+        i++;
+    }
+    return cc;
+}
+int main()
+{
+    int A[] = {7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2, 1, 2, 0, 1, 7, 0, 1};
+    // int A[] = {1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5};
+    int n = sizeof(A)/sizeof(A[0]);
+    int k = 3;
+    cout<<"\nTotal Page Faults Are "<<solve(A, n, k);
+    return 0;
+}
+
+3. LRU_counter
+#include<bits/stdc++.h>
+using namespace std;
+int solve(int A[], int n, int k)
+{
+    int cc = 0;
+    vector<int>v1, v2;
+    int i = 0;
+    while(v1.size() < k)
+    {
+        cout<<"Current Element is "<<A[i]<<endl<<"The Frame Window is ";
+        for(int j=0;j<v1.size();j++){
+            cout<<v1[j]<<" ";
+        }
+        cout<<endl;
+
+        for(int j=0;j<v2.size();j++)
+            v2[j]++;
+        if(find(v1.begin(), v1.end(), A[i]) == v1.end()){
+            v1.push_back(A[i]);
+            v2.push_back(1);
+            cc++;
+        }
+        i++;
+    }
+    while(i<n)
+    {
+        cout<<"Current Element is "<<A[i]<<endl<<"The Frame Window is ";
+        for(int j=0;j<v1.size();j++){
+            cout<<v1[j]<<" ";
+        }
+        cout<<endl;
+
+        for(int j=0;j<v2.size();j++)
+            v2[j]++;
+
+        if(find(v1.begin(), v1.end(), A[i]) == v1.end()){
+            int m1 = -1, m2 = INT_MAX;
+            for(int j=0;j<v2.size();j++){
+                if(v2[j] < m2){
+                    m2 = v2[j];
+                    m1 = j;
+                }
+            }
+            v1[m1] = A[i];
+            v2[m1] = 1;
+            cc++;
+        }
+        i++;
+    }
+    return cc;
+}
+int main()
+{
+    int A[] = {7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2, 1, 2, 0, 1, 7, 0, 1};
+    // int A[] = {1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5};
+    int n = sizeof(A)/sizeof(A[0]);
+    int k = 3;
+    cout<<"\nTotal Page Faults Are "<<solve(A, n, k);
+    return 0;
+}
+
+4. LRU_QUEUE
+#include<bits/stdc++.h>
+using namespace std;
+
+void display(list<int>l)
+{
+    cout<<"Frame window is ";
+    for(auto i:l)
+        cout<<i<<" ";
+    cout<<endl;
+}
+int solve(int A[], int n, int k)
+{
+    int cc = 0;
+    list<int>l;
+    map<int, list<int>::iterator>mp;
+    for(int i=0;i<n;i++)
+    {
+        cout<<"Element is "<<A[i]<<endl;
+        if(mp.find(A[i]) == mp.end())
+        {
+            display(l);
+            cc++;
+            if(l.size() == k)
+            {
+                int last = l.back();
+                l.pop_back();
+                mp.erase(last);
+            }
+        }
+        else
+        {
+            l.erase(mp[A[i]]);
+        }
+        l.push_front(A[i]); 
+        mp[A[i]] = l.begin();
+
+    }
+    return cc;
+}
+int main()
+{
+    int A[] = {7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2, 1, 2, 0, 1, 7, 0, 1};
+    // int A[] = {1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5};
+    int n = sizeof(A)/sizeof(A[0]);
+    int k = 3;
+     cout<<"\nTotal Page Faults Are "<<solve(A, n, k);
+    return 0;
+}
